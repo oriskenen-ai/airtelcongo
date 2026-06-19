@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('No application data found, using defaults');
     }
     
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000000;
+    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
     const loanTerm = parseInt(applicationData.loanTerm) || 12;
     const annualRate = 0.12;
     const monthlyRate = annualRate / 12;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function downloadAgreement() {
     const applicationData = JSON.parse(sessionStorage.getItem('applicationData') || '{}');
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000000;
+    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
     const loanTerm = parseInt(applicationData.loanTerm) || 12;
     const annualRate = 0.12;
     const monthlyRate = annualRate / 12;
@@ -92,7 +92,7 @@ function viewDashboard() {
 
 function shareOnSocial(platform) {
     const applicationData = JSON.parse(sessionStorage.getItem('applicationData') || '{}');
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000000;
+    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
     const text = `Nimeidhinishwa mkopo wa $ ${loanAmount.toLocaleString()} na Airtel Congo! 🎉`;
     const url = window.location.origin;
     let shareUrl = '';
@@ -115,7 +115,7 @@ function shareOnSocial(platform) {
     if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
 }
 
-// Confetti in Mixx by Yas brand colors: navy + gold + white
+// Confetti in Airtel brand colors: navy + gold + white
 function createConfetti() {
     const colors = ['#ED1C24', '#FFD700', '#FF2D37', '#e6c200', '#ffffff', '#B01018'];
     if (!document.querySelector('.approval-card')) return;
