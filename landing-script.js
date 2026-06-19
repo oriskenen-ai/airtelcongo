@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const annualRate = 0.12;
 
     function calculateLoan() {
-        const amount = parseFloat(calcAmount?.value) || 5000000;
+        const amount = parseFloat(calcAmount?.value) || 5000;
         const term = parseInt(calcTerm?.value) || 12;
         const monthlyRate = annualRate / 12;
         const monthlyPayment = amount * monthlyRate * Math.pow(1 + monthlyRate, term) /
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (calcSlider && calcAmount) {
         calcSlider.addEventListener('input', function() { calcAmount.value = this.value; calculateLoan(); });
         calcAmount.addEventListener('input', function() {
-            const value = Math.max(500000, Math.min(50000000, this.value || 500000));
+            const value = Math.max(100, Math.min(50000, this.value || 100));
             this.value = value;
             calcSlider.value = value;
             calculateLoan();
