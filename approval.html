@@ -1,159 +1,162 @@
-// Approval Page Script - Airtel Congo
-document.addEventListener('DOMContentLoaded', function() {
-    const applicationData = JSON.parse(sessionStorage.getItem('applicationData') || '{}');
-    
-    if (!applicationData.loanAmount) {
-        console.warn('No application data found, using defaults');
-    }
-    
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
-    const loanTerm = parseInt(applicationData.loanTerm) || 12;
-    const annualRate = 0.12;
-    const monthlyRate = annualRate / 12;
-    
-    const monthlyPayment = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, loanTerm) / 
-                          (Math.pow(1 + monthlyRate, loanTerm) - 1);
-    const totalRepayment = monthlyPayment * loanTerm;
-    
-    const approvedAmountEl = document.getElementById('approvedAmount');
-    const loanAmountDetailEl = document.getElementById('loanAmountDetail');
-    const monthlyPaymentDetailEl = document.getElementById('monthlyPaymentDetail');
-    const repaymentPeriodDetailEl = document.getElementById('repaymentPeriodDetail');
-    const totalRepaymentDetailEl = document.getElementById('totalRepaymentDetail');
-    
-    if (approvedAmountEl) approvedAmountEl.textContent = '$ ' + loanAmount.toLocaleString();
-    if (loanAmountDetailEl) loanAmountDetailEl.textContent = '$ ' + loanAmount.toLocaleString();
-    if (monthlyPaymentDetailEl) monthlyPaymentDetailEl.textContent = '$ ' + Math.round(monthlyPayment).toLocaleString();
-    if (repaymentPeriodDetailEl) repaymentPeriodDetailEl.textContent = loanTerm + ' miezi';
-    if (totalRepaymentDetailEl) totalRepaymentDetailEl.textContent = '$ ' + Math.round(totalRepayment).toLocaleString();
-    
-    console.log('Approval page loaded:', { loanAmount, loanTerm, monthlyPayment: Math.round(monthlyPayment) });
-    
-    createConfetti();
-});
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkopo Umeidhinishwa - Airtel Congo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="app-page">
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="logo-small">💰 Airtel Congo</div>
+            <div class="security-indicator success">
+                <span class="check-icon">✓</span>
+                <span>Imethibitishwa</span>
+            </div>
+        </div>
 
-function downloadAgreement() {
-    const applicationData = JSON.parse(sessionStorage.getItem('applicationData') || '{}');
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
-    const loanTerm = parseInt(applicationData.loanTerm) || 12;
-    const annualRate = 0.12;
-    const monthlyRate = annualRate / 12;
-    
-    const monthlyPayment = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, loanTerm) / 
-                          (Math.pow(1 + monthlyRate, loanTerm) - 1);
-    const totalRepayment = monthlyPayment * loanTerm;
-    
-    const agreementText = `
-MKATABA WA MKOPO
-==================
+        <!-- Progress Bar -->
+        <div class="progress-wrapper">
+            <div class="progress-steps">
+                <div class="step-item completed">
+                    <div class="step-circle">✓</div>
+                    <span>Maelezo Binafsi</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step-item completed">
+                    <div class="step-circle">✓</div>
+                    <span>Uthibitishaji</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step-item completed">
+                    <div class="step-circle">✓</div>
+                    <span>Idhini</span>
+                </div>
+            </div>
+        </div>
 
-Nambari ya Ombi: ${applicationData.applicationId || 'Hakuna'}
-Tarehe: ${new Date().toLocaleDateString('sw-TZ')}
+        <!-- Success Screen -->
+        <div class="form-card approval-card">
+            <div class="success-animation">
+                <div class="success-checkmark">
+                    <div class="check-icon-large">✓</div>
+                </div>
+            </div>
 
-TAARIFA ZA MKOPAJI:
-Jina: ${applicationData.fullName || 'Hakuna'}
-Barua pepe: ${applicationData.email || 'Hakuna'}
+            <h1 class="approval-title">Hongera! 🎉</h1>
+            <p class="approval-subtitle">Ombi lako la mkopo limeidhinishwa</p>
 
-MAELEZO YA MKOPO:
-Kiasi cha Mkopo: $ ${loanAmount.toLocaleString()}
-Kiwango cha Riba: ${(annualRate * 100)}% APR
-Muda wa Mkopo: ${loanTerm} miezi
-Malipo ya Kila Mwezi: $ ${Math.round(monthlyPayment).toLocaleString()}
-Jumla ya Malipo: $ ${Math.round(totalRepayment).toLocaleString()}
+            <div class="approval-box">
+                <div class="approval-badge">✓ IMEIDHINISHWA</div>
+                <div class="loan-amount-display">
+                    <span class="amount-label">Unastahili</span>
+                    <span class="amount-value" id="approvedAmount">$ 0</span>
+                    <span class="amount-note">Kulingana na ombi lako</span>
+                </div>
+            </div>
 
-KUSUDI: ${applicationData.loanPurpose || 'Hakuna'}
+            <div class="loan-details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon">💰</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Kiasi cha Mkopo</span>
+                        <span class="detail-value" id="loanAmountDetail">$ 0</span>
+                    </div>
+                </div>
 
-MASHARTI NA HALI:
-1. Hii ni hati ya idhini ya awali ya mkopo.
-2. Idhini ya mwisho inategemea uthibitishaji wa taarifa ulizotoa.
-3. Malipo ya kila mwezi yanadaiwa siku moja kila mwezi.
-4. Ada za ucheleweshaji zinaweza kutumika kulingana na masharti yetu ya huduma.
-5. Malipo ya mapema yanaruhusiwa bila adhabu.
+                <div class="detail-card">
+                    <div class="detail-icon">📅</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Muda wa Malipo</span>
+                        <span class="detail-value" id="repaymentPeriodDetail">miezi 12</span>
+                    </div>
+                </div>
 
-Hati hii ni kwa maelezo tu na haijakubaliana.
+                <div class="detail-card">
+                    <div class="detail-icon">💳</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Malipo ya Kila Mwezi</span>
+                        <span class="detail-value" id="monthlyPaymentDetail">$ 0</span>
+                    </div>
+                </div>
 
-Imetengenezwa na Airtel Congo
-    `;
-    
-    const blob = new Blob([agreementText], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mkataba-mkopo-${applicationData.applicationId || 'rasimu'}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-}
+                <div class="detail-card">
+                    <div class="detail-icon">📊</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Kiwango cha Riba</span>
+                        <span class="detail-value">12% APR</span>
+                    </div>
+                </div>
 
-function viewDashboard() {
-    alert('Kipengele cha Dashibodi kinakuja hivi karibuni! Utaweza kufuatilia hali ya mkopo wako hapa.');
-}
+                <div class="detail-card">
+                    <div class="detail-icon">📈</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Jumla ya Malipo</span>
+                        <span class="detail-value" id="totalRepaymentDetail">$ 0</span>
+                    </div>
+                </div>
 
-function shareOnSocial(platform) {
-    const applicationData = JSON.parse(sessionStorage.getItem('applicationData') || '{}');
-    const loanAmount = parseFloat(applicationData.loanAmount) || 5000;
-    const text = `Nimeidhinishwa mkopo wa $ ${loanAmount.toLocaleString()} na Airtel Congo! 🎉`;
-    const url = window.location.origin;
-    let shareUrl = '';
-    
-    switch(platform.toLowerCase()) {
-        case 'whatsapp':
-            shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
-            break;
-        case 'facebook':
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-            break;
-        case 'twitter':
-            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-            break;
-        case 'linkedin':
-            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-            break;
-    }
-    
-    if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
-}
+                <div class="detail-card">
+                    <div class="detail-icon">⚡</div>
+                    <div class="detail-content">
+                        <span class="detail-label">Ugawaji wa Pesa</span>
+                        <span class="detail-value">masaa 24</span>
+                    </div>
+                </div>
+            </div>
 
-// Confetti in Airtel brand colors: navy + gold + white
-function createConfetti() {
-    const colors = ['#ED1C24', '#FFD700', '#FF2D37', '#e6c200', '#ffffff', '#B01018'];
-    if (!document.querySelector('.approval-card')) return;
-    
-    for (let i = 0; i < 60; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            const size = Math.random() * 8 + 6;
-            confetti.style.cssText = `
-                position: fixed;
-                width: ${size}px;
-                height: ${size}px;
-                background: ${colors[Math.floor(Math.random() * colors.length)]};
-                left: ${Math.random() * 100}%;
-                top: -10px;
-                opacity: ${Math.random() * 0.8 + 0.2};
-                transform: rotate(${Math.random() * 360}deg);
-                pointer-events: none;
-                z-index: 9999;
-                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-            `;
-            document.body.appendChild(confetti);
-            
-            let top = -10;
-            let left = parseFloat(confetti.style.left);
-            const speed = Math.random() * 3 + 2;
-            const drift = (Math.random() - 0.5) * 1.5;
-            
-            const interval = setInterval(() => {
-                top += speed;
-                left += drift;
-                confetti.style.top = top + 'px';
-                confetti.style.left = left + '%';
-                if (top > window.innerHeight) {
-                    clearInterval(interval);
-                    confetti.remove();
-                }
-            }, 20);
-        }, i * 25);
-    }
-}
+            <div class="info-box success">
+                <div class="info-content">
+                    <p><strong>🎉 Kinachofuata ni nini?</strong></p>
+                    <ul class="next-steps">
+                        <li>✓ Ombi lako limeidhinishwa</li>
+                        <li>✓ Mkataba wa mkopo utatumwa kwa barua pepe yako</li>
+                        <li>✓ Pesa zitagawiwa ndani ya masaa 24</li>
+                        <li>✓ Angalia barua pepe yako kwa maelekezo zaidi</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="submit-button" onclick="downloadAgreement()">
+                    <span class="button-icon">📄</span>
+                    Pakua Mkataba wa Mkopo
+                </button>
+                <button class="submit-button secondary" onclick="viewDashboard()">
+                    <span class="button-icon">📊</span>
+                    Angalia Dashibodi
+                </button>
+            </div>
+
+            <div class="contact-box">
+                <p><strong>Unahitaji Msaada?</strong></p>
+                <p>Wasiliana nasi kwa <a href="mailto:support@airtelcongo.com">support@airtelcongo.com</a> au piga simu <a href="tel:100">100</a></p>
+            </div>
+
+            <div class="sharing-section">
+                <p class="sharing-text">Unajua mtu anayehitaji mkopo?</p>
+                <div class="share-buttons">
+                    <button class="share-btn" onclick="shareOnSocial('whatsapp')">
+                        📱 Shiriki WhatsApp
+                    </button>
+                    <button class="share-btn" onclick="shareOnSocial('facebook')">
+                        Shiriki Facebook
+                    </button>
+                </div>
+            </div>
+
+            <div class="approval-footer">
+                <p>🔒 Taarifa yako ni salama na imesimbwa</p>
+                <p style="margin-top:8px; font-size:0.85rem;">© 2026 Airtel Congo. Haki zote zimehifadhiwa.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="approval-script.js"></script>
+</body>
+</html>
